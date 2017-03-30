@@ -1,4 +1,16 @@
-# implementation of card game - Memory
+# implementation of card game - Memory v2.0
+# ---------------------------
+# in V 2.0, logic is as below:
+# e.g. flip 1 = 0, flip 2 = 1 --> step 1
+#      flip 3 = 0             --> step 2 flip 1 and 2 flip back
+#      flip 4 = 0             --> step 2 count as one pair.
+# ----------------------------
+# in V 1.0, logice is as below:
+# e.g. flip 1 = 0, flip 2 = 1 --> step 1
+#      flip 3 = 0             --> still count as step 1, and a succes pair.
+#      flip 4 = 1             --> step 2
+# ----------------------------
+
 
 import simplegui
 import random
@@ -39,8 +51,8 @@ def mouseclick(pos):
     
     if flip[card]:
         pass
-    else:
-        
+    
+    else:        
         if status == 0:
             status = 1
             moves += 1
@@ -56,13 +68,7 @@ def mouseclick(pos):
                 card2 = card
                 status = 2
             
-        elif status == 2:
-            if choice == memory_list[card2]:
-                flip[card] = True
-                flip[card1] = False
-                status = 0
-                
-            else:
+        elif status == 2:     
                 flip[card] = True
                 flip[card1] = False
                 flip[card2] = False
@@ -78,8 +84,8 @@ def draw(canvas):
     for i in range(16):
         if flip[i]:
             canvas.draw_polygon([(i*50,0),((i+1)*50,0),((i+1)*50,100),(i*50,100),],\
-                            2,'White','Green')
-            canvas.draw_text(str(memory_list[i]), [i*50+20,60],30,"White")
+                            2,'Green','White')
+            canvas.draw_text(str(memory_list[i]), [i*50+20,60],30,"Green")
         else:
             canvas.draw_polygon([(i*50,0),((i+1)*50,0),((i+1)*50,100),(i*50,100),],\
                             2,'White','Green')
