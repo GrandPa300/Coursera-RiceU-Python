@@ -14,9 +14,10 @@ LIVES = 3
 SCORE = 0
 FRICTION = 0.1
 ACC = 1
-MISSILE_VEL = 5
+MISSILE_VEL = 1
 
 time = 0 
+missile_count = 0
 
 # helper functions
 def deg2rad(deg):
@@ -77,7 +78,7 @@ ship_image = simplegui.load_image\
              ("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/double_ship.png")
 
 # missile image - shot1.png, shot2.png, shot3.png
-missile_info = ImageInfo([5,5], [10, 10], 3, 50, 5)
+missile_info = ImageInfo([5,5], [10, 10], 3, 75)
 missile_image = simplegui.load_image\
                 ("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/shot1.png")
 
@@ -163,14 +164,24 @@ class Ship:
             thrust_sound.pause()
     
     def shoot(self):
-        global missile
+        global missile_set, missile_count
         projection = ang2vec(self.angle)
         missile_pos = [self.pos[0] + self.radius * projection[0], \
                        self.pos[1] + self.radius * projection[1]]
         missile_vel = [self.vel[0] + MISSILE_VEL * projection[0],\
                        self.vel[1] + MISSILE_VEL * projection[1]]
-        missile = Sprite(missile_pos, missile_vel, self.angle, 0, \
-                         missile_image, missile_info, missile_sound)
+        
+        if missile_count <= 4:
+            missile_set.add(Sprite(missile_pos, missile_vel, self.angle, 0, \
+                         missile_image, missile_info, missile_sound))
+            missile_count += 1
+        
+        else:
+            # add a cap to missiles, max is 5 (0 - 4)
+            # when hit max missile number, pop one missile from set, reduce count by 1
+            missile_set.pop() 
+            missile_count -= 1
+            
     
     def clk_wise_trun(self, angular_vel):
         self.angle_vel = -deg2rad(angular_vel)
@@ -227,8 +238,11 @@ def draw(canvas):
     canvas.draw_image(debris_image, center, size, (wtime - WIDTH / 2, HEIGHT / 2), (WIDTH, HEIGHT))
     canvas.draw_image(debris_image, center, size, (wtime + WIDTH / 2, HEIGHT / 2), (WIDTH, HEIGHT))
 
-    missile.draw(canvas)
-    missile.update()
+    for missile in missile_set:
+        missile.life_span -= 1 
+        if missile.life_span > 0:
+            missile.draw(canvas)
+        missile.update()
     space_ship.draw(canvas)
     space_ship.update()
     asteroid.draw(canvas)
@@ -247,10 +261,7 @@ def asteroid_refresh():
 
 space_ship = Ship([400, 300], [0, 0], 0, ship_image, ship_info)
 asteroid_refresh()
-missile = Sprite(space_ship.pos, space_ship.vel, 0, 0, missile_image, missile_info)
-
-print space_ship
-print asteroid
+missile_set = set([])
 
 # key handler
 def down(key):

@@ -1,6 +1,6 @@
 ## Summary:
 
-+ Mini Projects for "An Introduction to Interactive Programming 
++ Projects for "An Introduction to Interactive Programming 
 in Python" by Rice U on Coursera
 + Copy and paste code and run on CodeSkulptor.org 
 
